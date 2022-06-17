@@ -16,16 +16,39 @@ path(life_street, e, intersection_outside).
 path(key_street, w, intersection_outside). 
 path(mansion_entrance, s, intersection_outside). 
 
-path(mansion_entrance, n, mansion_exit). 
-
 path(mansion_exit, s, mansion_entrance). 
 path(mansion_exit, w, darkhallway). 
 path(mansion_exit, e, dollroom). 
 path(mansion_exit, n, stairsroom). 
 
+path(mansion_entrance, n, mansion_exit). 
+path(darkhallway, e, mansion_exit). 
+path(dollroom, w, mansion_exit). 
+path(stairsroom, s, mansion_exit). 
+
+path(stairsroom, e, upstairsroom). 
+path(stairsroom, w, downstairsroom).
+
+path(dollroom, e, pentagramarea).
+path(pentagramarea, w, dollroom).
+
+path(darkhallway, w, closetroom).
+path(darkhallway, jump, tchamber).
+
+path(closetroom, e, darkhallway).
+path(closetroom, n, traproom).
+
+
 at(thing, someplace).
 at(entrancekey, key_street).
 at(ball, intersection_outside).
+at(torch, mansion_exit).
+at(doll, pentagramarea).
+
+look_at(firstpainting, darkhallway).
+look_at(secondpainting, darkhallway).
+look_at(thirdpainting, darkhallway).
+look_at(fourthpainting, darkhallway).
 
 /* These rules describe how to pick up an object. */
 
@@ -42,13 +65,24 @@ take(X) :-
         append(List, [X], NewList),
         retractall(holding()),
         assert(holding(NewList)),
-        write('OK.'),
+        describe(X),
         !, nl.
 
 take(_) :-
         write('I don''t see it here.'),
         nl.
 
+/* These rules describe how to investigate an object. */
+
+investigate(X) :-
+               i_am_at(Place),
+               look_at(X, Place),
+               describe(X),
+               !, nl.
+
+investigate(_) :-
+               write('I don''t see it here.'),
+               nl.
 
 /* These rules describe how to put down an object. */
 
@@ -75,6 +109,8 @@ e :- go(e).
 
 w :- go(w).
 
+jump :- go(jump).
+
 
 /* This rule tells how to move in a given direction. */
 
@@ -96,6 +132,7 @@ look :-
         describe(Place),
         nl,
         notice_objects_at(Place),
+        notice_things_to_look_at(Place),
         nl.
 
 
@@ -108,6 +145,13 @@ notice_objects_at(Place) :-
         fail.
 
 notice_objects_at(_).
+
+notice_things_to_look_at(Place) :-
+        look_at(X, Place),
+        write('You can investigate the '), write(X), write('.'), nl,
+        fail.
+
+notice_things_to_look_at(_).
 
 
 /* This rule tells how to die. */
@@ -133,13 +177,14 @@ instructions :-
         nl,
         write('Enter commands using standard Prolog syntax.'), nl,
         write('Available commands are:'), nl,
-        write('start.             -- to start the game.'), nl,
-        write('n.  s.  e.  w.     -- to go in that direction.'), nl,
-        write('take(Object).      -- to pick up an object.'), nl,
-        write('drop(Object).      -- to put down an object.'), nl,
-        write('look.              -- to look around you again.'), nl,
-        write('instructions.      -- to see this message again.'), nl,
-        write('halt.              -- to end the game and quit.'), nl,
+        write('start.                -- to start the game.'), nl,
+        write('n.  s.  e.  w.        -- to go in that direction.'), nl,
+        write('take(Object).         -- to pick up an object.'), nl,
+        write('drop(Object).         -- to put down an object.'), nl,
+        write('investigate(Object).  -- to investigate an object.'), nl,
+        write('look.                 -- to look around you again.'), nl,
+        write('instructions.         -- to see this message again.'), nl,
+        write('halt.                 -- to end the game and quit.'), nl,
         nl.
 
 
@@ -164,7 +209,6 @@ describe(mansion_entrance) :- write('The door of the mansion is preventing you t
                             write('Going South leads back to the intersection.'), nl.
 describe(key_street) :- write('As brave as you are you went to the right and saw nothing else than emptiness.'), nl,
                         write('You are looking around and spotted a key infront of you.'), nl,
-                        write('Maybe this key has something to do with the mansion'), nl.
                         write('Going West leads back to the intersection'), nl.
 describe(life_street) :- write('As brave as you are you went to the left and saw nothing else than emptiness'), nl,
                          write('You are thinking about how you got there.'), nl,
@@ -173,19 +217,34 @@ describe(mansion_exit) :- write('The mansion really is big. You noticed that eve
                           write('Going North leads to another big room. In thee angle of view you can still see stairs that go up and down.'), nl,
                           write('Going East leads to a suspicious looking room.'), nl,
                           write('Going West leads to a dark and long hallway.'), nl,
-                          write('Going South leads to the exit door.'), nl,
+                          write('Going South leads to the exit door.'), nl.
 describe(darkhallway) :- write('You see 4 paintings and under every of them you can see a sign with the name of the artist.'), nl,
                          write('Every step you make in the hallway makes the floor squeaking. The floor is for sure not built properly.'), nl,
                          write('Going West leads to a small room with a closet.'), nl,
-                         write('Going East leads back to the exit of the mansion.'), nl,
+                         write('Going East leads back to the exit of the mansion.'), nl.
 describe(dollroom) :- write('Going into the room you can see that the torches are purple now. It looks like a ritual room and on the floor is a pentagram.'), nl,
                       write('Meters away you see a doll.'), nl,
                       write('Going East leads to a closer look at the doll.'), nl,
-                      write('Going West leads back to the exit of the mansion.'), nl,
+                      write('Going West leads back to the exit of the mansion.'), nl.
 describe(stairsroom) :- write('Looking around you can see two stairs.'), nl,
                         write('The stairs to the East go up.'), nl,
                         write('The stairs to the West go down.'), nl,
                         write('Going South leads back to the exit of the mansion'), nl.
+describe(upstairsroom) :- write('You are on the first floor. You noticed that this area has a lot of dust and cobwebs.'), nl,
+                          write('Going West leads to the room with the stairs.'), nl,
+                          write('Going North leads ')
+
+describe(ball) :- write('A regular ball.').
+describe(entrancekey) :- write('It''s a normal key, but maybe it has something to do with the mansion.').
+describe(doll) :- write('The doll is looking kinda scary. It reminds you of a voodoo doll.').
+describe(firstpainting) :- write('As you look at the sign, you read that the painting was drawn by "Vincent Van Gogh".'), nl,
+                           write('You remember from a movie that the painting is called "12 Sunflowers".'), nl.
+describe(secondpainting) :- write('As you look at the sign, you read that the painting was drawn by "Leonardo Da Vinci".'), nl,
+                            write('It''s one of his most famous paintings, the Mona Lisa!'), nl.
+describe(thirdpainting) :- write('As you look at the sign, you read that the painting was drawn by "Pablo Picasso".'), nl,
+                           write('You have seen that painting before on a tv show. It''s called "Guernica".'), nl.
+describe(fourthpainting) :- write('As you look at the sign, you read that the painting was drawn by "Conan Van Zix".'), nl,
+                            write('You have never heard of him and the painting also looks strange.'), nl.
                           
 
 inventory :- 
