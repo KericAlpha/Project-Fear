@@ -17,11 +17,11 @@ path(key_street, w, intersection_outside).
 path(mansion_entrance, s, intersection_outside). 
 
 path(mansion_exit, s, mansion_entrance). 
-path(mansion_exit, w, darkhallway). 
+path(mansion_exit, w, darkhallway) :- holding([torch]).
 path(mansion_exit, e, dollroom). 
 path(mansion_exit, n, stairsroom). 
 
-path(mansion_entrance, n, mansion_exit). 
+path(mansion_entrance, n, mansion_exit) :- holding([entrancekey]).
 path(darkhallway, e, mansion_exit). 
 path(dollroom, w, mansion_exit). 
 path(stairsroom, s, mansion_exit). 
@@ -33,13 +33,21 @@ path(dollroom, e, pentagramarea).
 path(pentagramarea, w, dollroom).
 
 path(darkhallway, w, closetroom).
-path(darkhallway, jump, tchamber).
+path(darkhallway, jump, tchamber) :- write('Ah shiet. As you jumped the floor broke.'), nl,
+                                     write('You are in a dark room, but the torch is brightening up the room.'), nl,
+                                     write('You don''t know where you are.'), nl,
+                                     write('There is no door and you can''t get out of this room.'), nl,
+                                     write('You question yourself why you jumped. You knew that something bad will happen'), nl,
+                                     write('You lost sense of time.'), nl,
+                                     write('You died by dehydration.'), die.
 
 path(closetroom, e, darkhallway).
-path(closetroom, n, traproom).
+path(closetroom, n, traproom) :- write('As you enter the room you trip on a thread.'), nl,
+                                 write('At first nothing happened but seconds later you hear something rolling.'), nl,
+                                 write('Before you even could run away, a trapdoor above you opened and a big rock fell down'), nl,
+                                 write('You got crushed.'), die.
 
 
-at(thing, someplace).
 at(entrancekey, key_street).
 at(ball, intersection_outside).
 at(torch, mansion_exit).
@@ -122,6 +130,14 @@ go(Direction) :-
         !, look.
 
 go(_) :-
+        i_am_at(mansion_entrance),
+        write('The door is locked.').
+
+go(_) :-
+        i_am_at(mansion_exit),
+        write('The hallway is too dark. You need a light source.').
+
+go(_) :-
         write('You can''t go that way.').
 
 
@@ -200,39 +216,38 @@ start :-
 
 describe(intersection_outside) :- write('You are standing infront of a mansion. It looks abandoned and the atmosphere is terrifying.'), nl,
                                   write('To your left and to your right you see nothing but emptiness. You can still go there and check the place out.'), nl,
-                                  write('Behind you are stairs. You can''t identify where they lead to'), nl.
+                                  write('Behind you are stairs. You can''t identify where they lead to.').
 describe(escape) :- write('You hoped that the stairs would lead back to normal life. A few minutes pass before you see a brighter light.'), nl,
                     write('You start running and suddenly you wake up, all sweaty and shocked. You prepare for todays day in the Higher Technical Colleague in Leonding.'), nl,
-                    write('But what you don''t know is, that the nightmare is just beginning'), nl.
-describe(mansion_entrance) :- write('The door of the mansion is preventing you to enter it.'), nl,
-                            write('You have to go look for a key.'), nl,
-                            write('Going South leads back to the intersection.'), nl.
+                    write('But what you don''t know is, that the nightmare is just beginning...').
+describe(mansion_entrance) :- write('You are standing infront of the door of the mansion.'), nl,
+                            write('Going South leads back to the intersection.').
 describe(key_street) :- write('As brave as you are you went to the right and saw nothing else than emptiness.'), nl,
                         write('You are looking around and spotted a key infront of you.'), nl,
-                        write('Going West leads back to the intersection'), nl.
+                        write('Going West leads back to the intersection').
 describe(life_street) :- write('As brave as you are you went to the left and saw nothing else than emptiness'), nl,
                          write('You are thinking about how you got there.'), nl,
-                         write('Going West leads back to the intersection'), nl.
+                         write('Going West leads back to the intersection.').
 describe(mansion_exit) :- write('The mansion really is big. You noticed that even though the mansion is abandoned that chandeliers and torches are still burning.'), nl,
                           write('Going North leads to another big room. In thee angle of view you can still see stairs that go up and down.'), nl,
                           write('Going East leads to a suspicious looking room.'), nl,
                           write('Going West leads to a dark and long hallway.'), nl,
-                          write('Going South leads to the exit door.'), nl.
+                          write('Going South leads to the exit door.').
 describe(darkhallway) :- write('You see 4 paintings and under every of them you can see a sign with the name of the artist.'), nl,
                          write('Every step you make in the hallway makes the floor squeaking. The floor is for sure not built properly.'), nl,
                          write('Going West leads to a small room with a closet.'), nl,
-                         write('Going East leads back to the exit of the mansion.'), nl.
+                         write('Going East leads back to the exit of the mansion.').
 describe(dollroom) :- write('Going into the room you can see that the torches are purple now. It looks like a ritual room and on the floor is a pentagram.'), nl,
                       write('Meters away you see a doll.'), nl,
                       write('Going East leads to a closer look at the doll.'), nl,
-                      write('Going West leads back to the exit of the mansion.'), nl.
+                      write('Going West leads back to the exit of the mansion.').
 describe(stairsroom) :- write('Looking around you can see two stairs.'), nl,
                         write('The stairs to the East go up.'), nl,
                         write('The stairs to the West go down.'), nl,
-                        write('Going South leads back to the exit of the mansion'), nl.
+                        write('Going South leads back to the exit of the mansion').
 describe(upstairsroom) :- write('You are on the first floor. You noticed that this area has a lot of dust and cobwebs.'), nl,
                           write('Going West leads to the room with the stairs.'), nl,
-                          write('Going North leads ')
+                          write('Going North leads ').
 
 describe(ball) :- write('A regular ball.').
 describe(entrancekey) :- write('It''s a normal key, but maybe it has something to do with the mansion.').
