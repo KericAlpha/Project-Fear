@@ -29,17 +29,33 @@ path(stairsroom, s, mansion_exit).
 path(stairsroom, e, upstairsroom). 
 path(stairsroom, w, downstairsroom).
 
+path(upstairsroom, w, stairsroom).
+path(upstairsroom, n, roomwithchest).
+
+path(roomwithchest, w, floor1reducer).
+path(roomwithchest, s, upstairsroom).
+
+path(floor1reducer, e, roomwithchest).
+
+path(downstairsroom, n, keyexit).
+path(downstairsroom, e, stairsroom).
+
+path(keyexit, s, downstairsroom).
+
 path(dollroom, e, pentagramarea).
+path(dollroom, w, mansion_exit).
+
 path(pentagramarea, w, dollroom).
 
 path(darkhallway, w, closetroom).
 path(darkhallway, jump, tchamber) :- write('Ah shiet. As you jumped the floor broke.'), nl,
                                      write('You are in a dark room, but the torch is brightening up the room.'), nl,
-                                     write('You don''t know where you are.'), nl,
+                                     write('You do not know where you are.'), nl,
                                      write('There is no door and you can''t get out of this room.'), nl,
                                      write('You question yourself why you jumped. You knew that something bad will happen'), nl,
                                      write('You lost sense of time.'), nl,
                                      write('You died by dehydration.'), die.
+path(darkhallway, e,mansion_exit).
 
 path(closetroom, e, darkhallway).
 path(closetroom, n, traproom) :- write('As you enter the room you trip on a thread.'), nl,
@@ -52,6 +68,8 @@ at(entrancekey, key_street).
 at(ball, intersection_outside).
 at(torch, mansion_exit).
 at(doll, pentagramarea).
+at(skull, roomwithchest).
+at(chestkey, closetroom).
 
 look_at(firstpainting, darkhallway).
 look_at(secondpainting, darkhallway).
@@ -71,7 +89,7 @@ take(X) :-
         retract(at(X, Place)),
         holding(List),
         append(List, [X], NewList),
-        retractall(holding()),
+        retractall(holding(_)),
         assert(holding(NewList)),
         describe(X),
         !, nl.
@@ -227,7 +245,7 @@ describe(key_street) :- write('As brave as you are you went to the right and saw
                         write('Going West leads back to the intersection').
 describe(life_street) :- write('As brave as you are you went to the left and saw nothing else than emptiness'), nl,
                          write('You are thinking about how you got there.'), nl,
-                         write('Going West leads back to the intersection.').
+                         write('Going East leads back to the intersection.').
 describe(mansion_exit) :- write('The mansion really is big. You noticed that even though the mansion is abandoned that chandeliers and torches are still burning.'), nl,
                           write('Going North leads to another big room. In thee angle of view you can still see stairs that go up and down.'), nl,
                           write('Going East leads to a suspicious looking room.'), nl,
@@ -252,6 +270,7 @@ describe(upstairsroom) :- write('You are on the first floor. You noticed that th
 describe(ball) :- write('A regular ball.').
 describe(entrancekey) :- write('It''s a normal key, but maybe it has something to do with the mansion.').
 describe(doll) :- write('The doll is looking kinda scary. It reminds you of a voodoo doll.').
+describe(torch) :- write('A torch. It emmits a warm light').
 describe(firstpainting) :- write('As you look at the sign, you read that the painting was drawn by "Vincent Van Gogh".'), nl,
                            write('You remember from a movie that the painting is called "12 Sunflowers".'), nl.
 describe(secondpainting) :- write('As you look at the sign, you read that the painting was drawn by "Leonardo Da Vinci".'), nl,
