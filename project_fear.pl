@@ -113,13 +113,14 @@ investigate(_) :-
 /* These rules describe how to put down an object. */
 
 drop(X) :-
-        holding(X),
+        holding(List),
+        delete(List, X, L),
         i_am_at(Place),
-        retract(holding(X)),
+        retractall(holding(List)),
+        assert(holding(L)),
         assert(at(X, Place)),
         write('OK.'),
         !, nl.
-
 drop(_) :-
         write('You aren''t holding it!'),
         nl.
@@ -237,7 +238,7 @@ describe(intersection_outside) :- write('You are standing infront of a mansion. 
                                   write('Behind you are stairs. You can''t identify where they lead to.').
 describe(escape) :- write('You hoped that the stairs would lead back to normal life. A few minutes pass before you see a brighter light.'), nl,
                     write('You start running and suddenly you wake up, all sweaty and shocked. You prepare for todays day in the Higher Technical Colleague in Leonding.'), nl,
-                    write('But what you don''t know is, that the nightmare is just beginning...').
+                    write('But what you don''t know is, that the nightmare is just beginning...'), nl, finish.
 describe(mansion_entrance) :- write('You are standing infront of the door of the mansion.'), nl,
                             write('Going South leads back to the intersection.').
 describe(key_street) :- write('As brave as you are you went to the right and saw nothing else than emptiness.'), nl,
@@ -265,12 +266,20 @@ describe(stairsroom) :- write('Looking around you can see two stairs.'), nl,
                         write('Going South leads back to the exit of the mansion').
 describe(upstairsroom) :- write('You are on the first floor. You noticed that this area has a lot of dust and cobwebs.'), nl,
                           write('Going West leads to the room with the stairs.'), nl,
-                          write('Going North leads ').
+                          write('Going North leads to another room.').
+describe(roomwithchest) :- write('You are now within a small and dark room.'), nl,
+                           write('As you look closer you can see a small chest standing in the middle of the room.'), nl,
+                           write('To the west there is another door.'), nl,
+                           write('Going west leads back to the stairs.').
+                             
+
 
 describe(ball) :- write('A regular ball.').
-describe(entrancekey) :- write('It''s a normal key, but maybe it has something to do with the mansion.').
+describe(entrancekey) :- write('It is a normal key, but maybe it has something to do with the mansion.').
 describe(doll) :- write('The doll is looking kinda scary. It reminds you of a voodoo doll.').
 describe(torch) :- write('A torch. It emmits a warm light').
+describe(chestkey) :- write('A Key that looks like it could fit in a chest').
+describe(skull) :- write('Gross').
 describe(firstpainting) :- write('As you look at the sign, you read that the painting was drawn by "Vincent Van Gogh".'), nl,
                            write('You remember from a movie that the painting is called "12 Sunflowers".'), nl.
 describe(secondpainting) :- write('As you look at the sign, you read that the painting was drawn by "Leonardo Da Vinci".'), nl,
