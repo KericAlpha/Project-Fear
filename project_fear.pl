@@ -267,10 +267,12 @@ describe(stairsroom) :- write('Looking around you can see two stairs.'), nl,
 describe(upstairsroom) :- write('You are on the first floor. You noticed that this area has a lot of dust and cobwebs.'), nl,
                           write('Going West leads to the room with the stairs.'), nl,
                           write('Going North leads to another room.').
-describe(roomwithchest) :- write('You are now within a small and dark room.'), nl,
-                           write('As you look closer you can see a small chest standing in the middle of the room.'), nl,
-                           write('To the west there is another door.'), nl,
-                           write('Going west leads back to the stairs.').
+describe(roomwithchest) :- write('You are now within a small and dark room, containing a chest.'), nl,
+                           write('As you look closer you can see four buttons on the wall'), nl,
+                           write('Next to the buttons there is a note reading:'), nl,
+                           write('"Among the four there is one impostor. It shall guide you to your destination."')
+                           write('To the West there is another door.'), nl,
+                           write('Going South leads back to the stairs.').
                              
 
 
