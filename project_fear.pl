@@ -1,6 +1,6 @@
 /* Fear, by Keric Ajdin and Wizany Dominik. */
 
-:- dynamic i_am_at/1, at/2, holding/1.
+:- dynamic i_am_at/1, at/2, holding/1, fearcount/1.
 :- retractall(at(_, _)), retractall(i_am_at(_)), retractall(alive(_)).
 
 holding([]).
@@ -66,6 +66,7 @@ path(closetroom, n, traproom) :- write('As you enter the room you trip on a thre
                                  write('At first nothing happened but seconds later you hear something rolling.'), nl,
                                  write('Before you even could run away, a trapdoor above you opened and a big rock fell down'), nl,
                                  write('You got crushed.'), die.
+
 
 at(entrancekey, key_street).
 at(ball, intersection_outside).
@@ -188,10 +189,18 @@ jump :- go(jump).
 /* This rule tells how to move in a given direction. */
 
 go(Direction) :-
+        fearcount(X),
+        X > 20,
+        write('You have reached the point where you can not keep your eyes open from fear.'), nl,
+        write('You pass out...'),
+        die.
+
+go(Direction) :-
         i_am_at(Here),
         path(Here, Direction, There),
         retract(i_am_at(Here)),
         assert(i_am_at(There)),
+        incrfear,
         !, look.
 
 go(n) :-
@@ -251,6 +260,36 @@ die :-
 
 /* These rules describe the fear mechanik */
 
+init :- 
+        retractall(fearcount(_)),
+        assertz(fearcount(0)).
+
+incrfear :-
+        checkdoll,
+        fearcount(V0),
+        retractall(fearcount(_)),
+        succ(V0,V), 
+        assertz(fearcount(V)).
+incrfear :-
+        fearcount(V0),
+        retractall(fearcount(_)),
+        succ(V0,V), 
+        assertz(fearcount(V)).
+
+sleep :-
+        retractall(fearcount(_)),
+        assertz(fearcount(0)).
+
+checkfear :-
+        fearcount(X),
+        write(X).
+
+checkdoll :-
+        checkinventory(doll),
+        fearcount(V0),
+        retractall(fearcount(_)),
+        succ(V0,V), 
+        assertz(fearcount(V)).
 
 /* Under UNIX, the "halt." command quits Prolog but does not
    remove the output window. On a PC, however, the window
@@ -274,9 +313,13 @@ instructions :-
         write('take(Object).         -- to pick up an object.'), nl,
         write('drop(Object).         -- to put down an object.'), nl,
         write('investigate(Object).  -- to investigate an object.'), nl,
+        write('interact(Object)      -- to interact with an object'), nl,
         write('look.                 -- to look around you again.'), nl,
         write('instructions.         -- to see this message again.'), nl,
         write('halt.                 -- to end the game and quit.'), nl,
+        write('checkfear.            -- to check your fear meter'), nl,
+        write('The fear meter portrais your anxiety and increases with chertain actions.'), nl,
+        write('Try to keep it below 20 or you might get a little bit too scared...'),
         nl.
 
 
@@ -284,6 +327,7 @@ instructions :-
 
 start :-
         instructions,
+        init,
         look.
 
 
@@ -318,7 +362,7 @@ describe(darkhallway) :- write('You see 4 paintings and under every of them you 
                          write('There is something on the ceiling. You could try to jump and get it').
 describe(dollroom) :- write('Going into the room you can see that the torches are purple now. It looks like a ritual room and on the floor is a pentagram.'), nl,
                       write('Meters away you see a doll.'), nl,
-                      write('Going East leads to a closer look at the doll.'), nl,
+                      write('Going East leads to a closer look at the pentagram.'), nl,
                       write('Going West leads back to the exit of the mansion.').
 describe(stairsroom) :- write('Looking around you can see two stairs.'), nl,
                         write('In front of you is an altar. It looks like it is missing something'), nl,
@@ -388,10 +432,10 @@ describe(altar) :- write('You place the skull onto the altar.') , nl,
                    write('The candles suddenly get lit lighting up the room.'), nl,
                    write('A demonic looking key suddenly appeared and you decide to take it'), takedemkey.
 describe(closet) :- write('You open the closet, which turns out to be empty.'), nl,
-                    write('But suddenly you hear a loud scream coming deep from within the mansion...'). 
+                    write('But suddenly you hear a loud scream coming deep from within the mansion...'), incrfear, incrfear, incrfear, incrfear, incrfear. 
 describe(bed) :- write('You lay down and close your eyes.'), nl,
                  write('strangely the atmosphere of the room makes it possible to relax quite a bit.'), nl,
-                 write('You feel a lot less stressed out.').
+                 write('You feel a lot less stressed out.'), sleep.
 inventory :- 
         holding(Y), 
         not(proper_length([Y], 0)), 
