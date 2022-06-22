@@ -21,7 +21,7 @@ path(mansion_exit, w, darkhallway) :- holding([torch]).
 path(mansion_exit, e, dollroom). 
 path(mansion_exit, n, stairsroom). 
 
-path(mansion_entrance, n, mansion_exit) :- holding([_|entrancekey]); holding(entrancekey|_).
+path(mansion_entrance, n, mansion_exit) :- holding([entrancekey]).
 path(darkhallway, e, mansion_exit). 
 path(dollroom, w, mansion_exit). 
 path(stairsroom, s, mansion_exit). 
@@ -68,7 +68,6 @@ at(entrancekey, key_street).
 at(ball, intersection_outside).
 at(torch, mansion_exit).
 at(doll, pentagramarea).
-/*at(skull, roomwithchest). */
 at(chestkey, closetroom).
 
 look_at(firstpainting, darkhallway).
@@ -80,6 +79,11 @@ inter_at(firstbutton, roomwithchest).
 inter_at(secondbutton, roomwithchest).
 inter_at(thirdbutton, roomwithchest).
 inter_at(fourthbutton, roomwithchest).
+
+/*Checks if you are holding an item*/
+
+member(X, [X|_]).
+member(X, [_|T]) :- member(X,T).
 
 /* These rules describe how to pick up an object. */
 
@@ -317,13 +321,13 @@ describe(thirdpainting) :- write('As you look at the sign, you read that the pai
 describe(fourthpainting) :- write('As you look at the sign, you read that the painting was drawn by "Conan Van Zix".'), nl,
                             write('You have never heard of him and the painting also looks strange.'), nl.
 describe(firstbutton) :- write("You press the button but it does not seem to do anything."), nl,
-                       write("Suddenly you notic that the Door is closed and you also smell a strong scent."), nl,
+                       write("Suddenly you notice that the Door is closed and you also smell a strong scent."), nl,
                        write("The smell is overwhelming and you start to lose consciousness"), nl, die.
 describe(secondbutton) :- write("You press the button but it does not seem to do anything."), nl,
-                       write("Suddenly you notic that the Door is closed and you also smell a strong scent."), nl,
+                       write("Suddenly you notice that the Door is closed and you also smell a strong scent."), nl,
                        write("The smell is overwhelming and you start to lose consciousness"), nl, die.
 describe(thirdbutton) :- write("You press the button but it does not seem to do anything."), nl,
-                      write("Suddenly you notic that the Door is closed and you also smell a strong scent."), nl,
+                      write("Suddenly you notice that the Door is closed and you also smell a strong scent."), nl,
                       write("The smell is overwhelming and you start to lose consciousness"), nl, die.
                           
 describe(fourthbutton) :- write('You press the fourth button and immediatly hear a sound from the other side of the room.'), nl,
