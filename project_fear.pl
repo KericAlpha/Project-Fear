@@ -188,7 +188,7 @@ jump :- go(jump).
 
 /* This rule tells how to move in a given direction. */
 
-go(Direction) :-
+go(_) :-
         fearcount(X),
         X > 20,
         write('You have reached the point where you can not keep your eyes open from fear.'), nl,
@@ -231,8 +231,8 @@ look :-
         nl,
         notice_objects_at(Place),
         notice_things_to_look_at(Place),
+        notice_things_to_interact_with(Place),
         nl.
-
 
 /* These rules set up a loop to mention all the objects
    in your vicinity. */
@@ -251,6 +251,11 @@ notice_things_to_look_at(Place) :-
 
 notice_things_to_look_at(_).
 
+notice_things_to_interact_with(Place) :-
+        inter_at(X, Place),
+        write('You can interact with the '), write(X), write('.'), nl,
+        fail.
+notice_things_to_interact_with(_).
 
 /* This rule tells how to die. */
 
@@ -319,7 +324,7 @@ instructions :-
         write('halt.                 -- to end the game and quit.'), nl,
         write('checkfear.            -- to check your fear meter'), nl,
         write('The fear meter portrais your anxiety and increases with chertain actions.'), nl,
-        write('Try to keep it below 20 or you might get a little bit too scared...'),
+        write('Try to keep it below 20 or you might get a little bit too scared...'), nl,
         nl.
 
 
