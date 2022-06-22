@@ -16,7 +16,7 @@ path(life_street, e, intersection_outside).
 path(key_street, w, intersection_outside). 
 path(mansion_entrance, s, intersection_outside). 
 
-path(mansion_exit, s, mansion_entrance). 
+path(mansion_exit, s, mansion_entrance) :- checkinventory(exitkey). 
 path(mansion_exit, w, darkhallway) :- checkinventory(torch).
 path(mansion_exit, e, dollroom). 
 path(mansion_exit, n, stairsroom). 
@@ -41,7 +41,7 @@ path(roomwithchest, s, upstairsroom).
 
 path(floor1reducer, e, roomwithchest).
 
-path(downstairsroom, n, keyroom) :- checkinventory(basementkey).
+path(downstairsroom, n, keyroom) :- checkinventory(demkey).
 path(downstairsroom, e, stairsroom).
 
 path(keyroom, s, downstairsroom).
@@ -72,6 +72,7 @@ at(ball, intersection_outside).
 at(torch, mansion_exit).
 at(doll, pentagramarea).
 at(exitkey, keyroom).
+at(keyroom, exitkey).
 
 look_at(firstpainting, darkhallway).
 look_at(secondpainting, darkhallway).
@@ -82,6 +83,9 @@ inter_at(firstbutton, roomwithchest).
 inter_at(secondbutton, roomwithchest).
 inter_at(thirdbutton, roomwithchest).
 inter_at(fourthbutton, roomwithchest).
+inter_at(altar, stairsroom) :- checkinventory(skull).
+inter_at(closet, closetroom).
+inter_at(bed, floor1reducer).
 
 /*Checks if you are holding an item*/
 
@@ -117,6 +121,14 @@ takeskull :-
         retractall(holding(_)),
         assert(holding(NewList)),
         describe(skull),
+        !, nl.
+
+takedemkey :-
+        holding(List),
+        append(List, [demkey], NewList),
+        retractall(holding(_)),
+        assert(holding(NewList)),
+        describe(demkey),
         !, nl.
 
 /* These rules describe how to investigate an object. */
@@ -182,13 +194,21 @@ go(Direction) :-
         assert(i_am_at(There)),
         !, look.
 
-go(_) :-
+go(n) :-
         i_am_at(mansion_entrance),
         write('The door is locked.').
 
-go(_) :-
+go(w) :-
         i_am_at(mansion_exit),
         write('The hallway is too dark. You need a light source.').
+
+go(s) :-
+        i_am_at(mansion_exit),
+        write('The door is locked. Looks like this will be a long night :)').
+
+go(_) :-
+        i_am_at(downstairsroom),
+        write('The door is locked. But considering how it looks, it might be better that way.').
 
 go(_) :-
         write('You can''t go that way.').
@@ -229,6 +249,9 @@ die :-
         finish.
 
 
+/* These rules describe the fear mechanik */
+
+
 /* Under UNIX, the "halt." command quits Prolog but does not
    remove the output window. On a PC, however, the window
    disappears before the final output can be seen. Hence this
@@ -267,6 +290,8 @@ start :-
 /* These rules describe the various rooms.  Depending on
    circumstances, a room may have more than one description. */
 
+/* rooms */
+
 describe(intersection_outside) :- write('You are standing infront of a mansion. It looks abandoned and the atmosphere is terrifying.'), nl,
                                   write('To your left and to your right you see nothing but emptiness. You can still go there and check the place out.'), nl,
                                   write('Behind you are stairs. You can''t identify where they lead to.').
@@ -296,12 +321,17 @@ describe(dollroom) :- write('Going into the room you can see that the torches ar
                       write('Going East leads to a closer look at the doll.'), nl,
                       write('Going West leads back to the exit of the mansion.').
 describe(stairsroom) :- write('Looking around you can see two stairs.'), nl,
+                        write('In front of you is an altar. It looks like it is missing something'), nl,
                         write('The stairs to the East go up.'), nl,
                         write('The stairs to the West go down.'), nl,
                         write('Going South leads back to the exit of the mansion').
 describe(upstairsroom) :- write('You are on the first floor. You noticed that this area has a lot of dust and cobwebs.'), nl,
                           write('Going West leads to the room with the stairs.'), nl,
                           write('Going North leads to another room.').
+describe(downstairsroom) :- write('You find yourself in the basement of the Mansion.'), nl,
+                            write('It is cold and dark. This place makes you feel scared.'), nl,
+                            write('There is a scary looking door to the north with a keyhole shaped like a skull.'), nl,
+                            write('Going East leads back to the stairs room.').    
 describe(roomwithchest) :- write('You are now within a small and dark room, containing a chest.'), nl,
                            write('As you look closer you can see four buttons on the wall'), nl,
                            write('Next to the buttons there is a note reading:'), nl,
@@ -314,14 +344,26 @@ describe(closetroom) :- write('There is a closet in the middle of the Room. Mayb
 describe(pentagramarea) :- write('You are now standing in front of the Pentagram.'), nl,
                            write('Going West leads back to the entrance of the room.').
 describe(keyroom) :- write('You are in a small room with a hook on the wall.'), nl,
-                     write('Going South leads back to the downstairs room').
+                     write('Going South leads back to the downstairs room.').
+describe(floor1reducer) :- write('You are in a very well lit and soothing room.'), nl,
+                           write('The atmosphere is very different to the rest of the mansion'), nl,
+                           write('There is a comfy looking bed which looks like it could be rested upon'), nl,
+                           write('Going East leads back to the chest room.').
+                
 
-describe(ball) :- write('A regular ball.').
-describe(entrancekey) :- write('It is a normal key, but maybe it has something to do with the mansion.').
-describe(doll) :- write('The doll is looking kinda scary. It reminds you of a voodoo doll.').
-describe(torch) :- write('A torch. It emmits a warm light').
-describe(chestkey) :- write('A Key that looks like it could fit in a chest').
-describe(skull) :- write('Gross').
+/* items */
+
+describe(ball) :- write('Obtained a regular ball.').
+describe(entrancekey) :- write('Obtained a normal looking key .Maybe it has something to do with the mansion.').
+describe(doll) :- write('Obtained a scary looking doll. It reminds you of a voodoo doll.').
+describe(torch) :- write('Obtained a torch. It emmits a warm light').
+describe(chestkey) :- write('Obtained Key that looks like it could fit in a chest').
+describe(skull) :- write('Obtained a skull. It looks like it can be used in some kind of ritual.').
+describe(demkey) :- write('Obtained demonic looking key.').
+describe(exitkey) :- write('Obtained yet another key. It looks somewhat similar to the first one').
+
+/* interactable objects */
+
 describe(firstpainting) :- write('As you look at the sign, you read that the painting was drawn by "Vincent Van Gogh".'), nl,
                            write('You remember from a movie that the painting is called "12 Sunflowers".'), nl.
 describe(secondpainting) :- write('As you look at the sign, you read that the painting was drawn by "Leonardo Da Vinci".'), nl,
@@ -331,18 +373,25 @@ describe(thirdpainting) :- write('As you look at the sign, you read that the pai
 describe(fourthpainting) :- write('As you look at the sign, you read that the painting was drawn by "Conan Van Zix".'), nl,
                             write('You have never heard of him and the painting also looks strange.'), nl.
 describe(firstbutton) :- write("You press the button but it does not seem to do anything."), nl,
-                       write("Suddenly you notice that the Door is closed and you also smell a strong scent."), nl,
-                       write("The smell is overwhelming and you start to lose consciousness"), nl, die.
+                         write("Suddenly you notice that the Door is closed and you also smell a strong scent."), nl,
+                         write("The smell is overwhelming and you start to lose consciousness"), nl, die.
 describe(secondbutton) :- write("You press the button but it does not seem to do anything."), nl,
-                       write("Suddenly you notice that the Door is closed and you also smell a strong scent."), nl,
-                       write("The smell is overwhelming and you start to lose consciousness"), nl, die.
+                          write("Suddenly you notice that the Door is closed and you also smell a strong scent."), nl,
+                          write("The smell is overwhelming and you start to lose consciousness"), nl, die.
 describe(thirdbutton) :- write("You press the button but it does not seem to do anything."), nl,
-                      write("Suddenly you notice that the Door is closed and you also smell a strong scent."), nl,
-                      write("The smell is overwhelming and you start to lose consciousness"), nl, die.
-                          
+                         write("Suddenly you notice that the Door is closed and you also smell a strong scent."), nl,
+                         write("The smell is overwhelming and you start to lose consciousness"), nl, die.
 describe(fourthbutton) :- write('You press the fourth button and immediatly hear a sound from the other side of the room.'), nl,
                           write('It turns out that the chest is now open and inside it there is a skull'), nl,
                           write('you decide to pick it up.'), takeskull.
+describe(altar) :- write('You place the skull onto the altar.') , nl,
+                   write('The candles suddenly get lit lighting up the room.'), nl,
+                   write('A demonic looking key suddenly appeared and you decide to take it'), takedemkey.
+describe(closet) :- write('You open the closet, which turns out to be empty.'), nl,
+                    write('But suddenly you hear a loud scream coming deep from within the mansion...'). 
+describe(bed) :- write('You lay down and close your eyes.'), nl,
+                 write('strangely the atmosphere of the room makes it possible to relax quite a bit.'), nl,
+                 write('You feel a lot less stressed out.').
 inventory :- 
         holding(Y), 
         not(proper_length([Y], 0)), 
