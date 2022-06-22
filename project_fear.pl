@@ -21,7 +21,7 @@ path(mansion_exit, w, darkhallway) :- holding([torch]).
 path(mansion_exit, e, dollroom). 
 path(mansion_exit, n, stairsroom). 
 
-path(mansion_entrance, n, mansion_exit) :- holding([entrancekey]).
+path(mansion_entrance, n, mansion_exit) :- holding([_|entrancekey]); holding(entrancekey|_).
 path(darkhallway, e, mansion_exit). 
 path(dollroom, w, mansion_exit). 
 path(stairsroom, s, mansion_exit). 
@@ -68,13 +68,18 @@ at(entrancekey, key_street).
 at(ball, intersection_outside).
 at(torch, mansion_exit).
 at(doll, pentagramarea).
-at(skull, roomwithchest).
+/*at(skull, roomwithchest). */
 at(chestkey, closetroom).
 
 look_at(firstpainting, darkhallway).
 look_at(secondpainting, darkhallway).
 look_at(thirdpainting, darkhallway).
 look_at(fourthpainting, darkhallway).
+
+inter_at(firstbutton, roomwithchest).
+inter_at(secondbutton, roomwithchest).
+inter_at(thirdbutton, roomwithchest).
+inter_at(fourthbutton, roomwithchest).
 
 /* These rules describe how to pick up an object. */
 
@@ -98,15 +103,36 @@ take(_) :-
         write('I don''t see it here.'),
         nl.
 
+takeskull :-
+        holding(List),
+        append(List, [skull], NewList),
+        retractall(holding(_)),
+        assert(holding(NewList)),
+        describe(skull),
+        !, nl.
+
 /* These rules describe how to investigate an object. */
 
 investigate(X) :-
                i_am_at(Place),
-               look_at(X, Place),
+               inter_at(X, Place),
                describe(X),
                !, nl.
 
 investigate(_) :-
+               write('I don''t see it here.'),
+               nl.
+
+
+/* These rules describe how to interact with an object. */
+
+interact(X) :-
+               i_am_at(Place),
+               inter_at(X, Place),
+               describe(X),
+               !, nl.
+
+interact(_) :-
                write('I don''t see it here.'),
                nl.
 
@@ -270,7 +296,7 @@ describe(upstairsroom) :- write('You are on the first floor. You noticed that th
 describe(roomwithchest) :- write('You are now within a small and dark room, containing a chest.'), nl,
                            write('As you look closer you can see four buttons on the wall'), nl,
                            write('Next to the buttons there is a note reading:'), nl,
-                           write('"Among the four there is one impostor. It shall guide you to your destination."')
+                           write('"Among the four there is one impostor. It shall guide you to your destination."'), nl,
                            write('To the West there is another door.'), nl,
                            write('Going South leads back to the stairs.').
                              
@@ -290,8 +316,19 @@ describe(thirdpainting) :- write('As you look at the sign, you read that the pai
                            write('You have seen that painting before on a tv show. It''s called "Guernica".'), nl.
 describe(fourthpainting) :- write('As you look at the sign, you read that the painting was drawn by "Conan Van Zix".'), nl,
                             write('You have never heard of him and the painting also looks strange.'), nl.
+describe(firstbutton) :- write("You press the button but it does not seem to do anything."), nl,
+                       write("Suddenly you notic that the Door is closed and you also smell a strong scent."), nl,
+                       write("The smell is overwhelming and you start to lose consciousness"), nl, die.
+describe(secondbutton) :- write("You press the button but it does not seem to do anything."), nl,
+                       write("Suddenly you notic that the Door is closed and you also smell a strong scent."), nl,
+                       write("The smell is overwhelming and you start to lose consciousness"), nl, die.
+describe(thirdbutton) :- write("You press the button but it does not seem to do anything."), nl,
+                      write("Suddenly you notic that the Door is closed and you also smell a strong scent."), nl,
+                      write("The smell is overwhelming and you start to lose consciousness"), nl, die.
                           
-
+describe(fourthbutton) :- write('You press the fourth button and immediatly hear a sound from the other side of the room.'), nl,
+                          write('It turns out that the chest is now open and inside it there is a skull'), nl,
+                          write('you decide to pick it up.'), takeskull.
 inventory :- 
         holding(Y), 
         not(proper_length([Y], 0)), 
