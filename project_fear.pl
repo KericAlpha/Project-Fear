@@ -17,13 +17,17 @@ path(key_street, w, intersection_outside).
 path(mansion_entrance, s, intersection_outside). 
 
 path(mansion_exit, s, mansion_entrance). 
-path(mansion_exit, w, darkhallway) :- holding([torch]).
+path(mansion_exit, w, darkhallway) :- checkinventory(torch).
 path(mansion_exit, e, dollroom). 
 path(mansion_exit, n, stairsroom). 
 
-path(mansion_entrance, n, mansion_exit) :- holding([entrancekey]).
+path(mansion_entrance, n, mansion_exit) :- checkinventory(entrancekey).
+
 path(darkhallway, e, mansion_exit). 
+path(darkhallway, w, closetroom).
+
 path(dollroom, w, mansion_exit). 
+
 path(stairsroom, s, mansion_exit). 
 
 path(stairsroom, e, upstairsroom). 
@@ -37,10 +41,10 @@ path(roomwithchest, s, upstairsroom).
 
 path(floor1reducer, e, roomwithchest).
 
-path(downstairsroom, n, keyexit).
+path(downstairsroom, n, keyroom) :- checkinventory(basementkey).
 path(downstairsroom, e, stairsroom).
 
-path(keyexit, s, downstairsroom).
+path(keyroom, s, downstairsroom).
 
 path(dollroom, e, pentagramarea).
 path(dollroom, w, mansion_exit).
@@ -63,12 +67,11 @@ path(closetroom, n, traproom) :- write('As you enter the room you trip on a thre
                                  write('Before you even could run away, a trapdoor above you opened and a big rock fell down'), nl,
                                  write('You got crushed.'), die.
 
-
 at(entrancekey, key_street).
 at(ball, intersection_outside).
 at(torch, mansion_exit).
 at(doll, pentagramarea).
-at(chestkey, closetroom).
+at(exitkey, keyroom).
 
 look_at(firstpainting, darkhallway).
 look_at(secondpainting, darkhallway).
@@ -85,6 +88,7 @@ inter_at(fourthbutton, roomwithchest).
 member(X, [X|_]).
 member(X, [_|T]) :- member(X,T).
 
+checkinventory(X) :- holding(Y), member(X, Y), member(X, [_|Y]).
 /* These rules describe how to pick up an object. */
 
 take(X) :-
@@ -285,7 +289,8 @@ describe(mansion_exit) :- write('The mansion really is big. You noticed that eve
 describe(darkhallway) :- write('You see 4 paintings and under every of them you can see a sign with the name of the artist.'), nl,
                          write('Every step you make in the hallway makes the floor squeaking. The floor is for sure not built properly.'), nl,
                          write('Going West leads to a small room with a closet.'), nl,
-                         write('Going East leads back to the exit of the mansion.').
+                         write('Going East leads back to the exit of the mansion.'), nl,
+                         write('There is something on the ceiling. You could try to jump and get it').
 describe(dollroom) :- write('Going into the room you can see that the torches are purple now. It looks like a ritual room and on the floor is a pentagram.'), nl,
                       write('Meters away you see a doll.'), nl,
                       write('Going East leads to a closer look at the doll.'), nl,
@@ -303,8 +308,13 @@ describe(roomwithchest) :- write('You are now within a small and dark room, cont
                            write('"Among the four there is one impostor. It shall guide you to your destination."'), nl,
                            write('To the West there is another door.'), nl,
                            write('Going South leads back to the stairs.').
-                             
-
+describe(closetroom) :- write('There is a closet in the middle of the Room. Maybe there is something interesting inside.'), nl,
+                        write('To the north there is a suspicious looking room. Maybe something hides in there.'), nl,
+                        write('Going East leads to the dark hallway.').
+describe(pentagramarea) :- write('You are now standing in front of the Pentagram.'), nl,
+                           write('Going West leads back to the entrance of the room.').
+describe(keyroom) :- write('You are in a small room with a hook on the wall.'), nl,
+                     write('Going South leads back to the downstairs room').
 
 describe(ball) :- write('A regular ball.').
 describe(entrancekey) :- write('It is a normal key, but maybe it has something to do with the mansion.').
