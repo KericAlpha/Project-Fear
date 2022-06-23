@@ -213,9 +213,11 @@ go(w) :-
 
 go(s) :-
         i_am_at(mansion_exit),
-        write('The door is locked. Looks like this will be a long night :)').
+        write('You try to open the door with the key you picked up in the beginning.'), nl,
+        write('It won''t open. It''s locked!'), nl,
+        write('Looks like this will be a long night :)').
 
-go(_) :-
+go(n) :-
         i_am_at(downstairsroom),
         write('The door is locked. But considering how it looks, it might be better that way.').
 
@@ -228,6 +230,7 @@ go(_) :-
 look :-
         i_am_at(Place),
         describe(Place),
+        nl,
         nl,
         notice_objects_at(Place),
         notice_things_to_look_at(Place),
@@ -313,16 +316,16 @@ instructions :-
         nl,
         write('Enter commands using standard Prolog syntax.'), nl,
         write('Available commands are:'), nl,
+        write('instructions.         -- to see this message again.'), nl,
         write('start.                -- to start the game.'), nl,
-        write('n.  s.  e.  w.        -- to go in that direction.'), nl,
+        write('n.  s.  e.  w.  jump. -- to go in that direction.'), nl,
         write('take(Object).         -- to pick up an object.'), nl,
         write('drop(Object).         -- to put down an object.'), nl,
         write('investigate(Object).  -- to investigate an object.'), nl,
-        write('interact(Object)      -- to interact with an object'), nl,
+        write('interact(Object)      -- to interact with an object.'), nl,
         write('look.                 -- to look around you again.'), nl,
-        write('instructions.         -- to see this message again.'), nl,
         write('halt.                 -- to end the game and quit.'), nl,
-        write('checkfear.            -- to check your fear meter'), nl,
+        write('checkfear.            -- to check your fear meter.'), nl,
         write('The fear meter portrais your anxiety and increases with chertain actions.'), nl,
         write('Try to keep it below 20 or you might get a little bit too scared...'), nl,
         nl.
@@ -351,12 +354,12 @@ describe(mansion_entrance) :- write('You are standing infront of the door of the
                             write('Going South leads back to the intersection.').
 describe(key_street) :- write('As brave as you are you went to the right and saw nothing else than emptiness.'), nl,
                         write('You are looking around and spotted a key infront of you.'), nl,
-                        write('Going West leads back to the intersection').
-describe(life_street) :- write('As brave as you are you went to the left and saw nothing else than emptiness'), nl,
+                        write('Going West leads back to the intersection.').
+describe(life_street) :- write('As brave as you are you went to the left and saw nothing else than emptiness.'), nl,
                          write('You are thinking about how you got there.'), nl,
                          write('Going East leads back to the intersection.').
 describe(mansion_exit) :- write('The mansion really is big. You noticed that even though the mansion is abandoned that chandeliers and torches are still burning.'), nl,
-                          write('Going North leads to another big room. In thee angle of view you can still see stairs that go up and down.'), nl,
+                          write('Going North leads to another big room. In thee angle of view you spot stairs that go up and down.'), nl,
                           write('Going East leads to a suspicious looking room.'), nl,
                           write('Going West leads to a dark and long hallway.'), nl,
                           write('Going South leads to the exit door.').
@@ -364,28 +367,28 @@ describe(darkhallway) :- write('You see 4 paintings and under every of them you 
                          write('Every step you make in the hallway makes the floor squeaking. The floor is for sure not built properly.'), nl,
                          write('Going West leads to a small room with a closet.'), nl,
                          write('Going East leads back to the exit of the mansion.'), nl,
-                         write('There is something on the ceiling. You could try to jump and get it').
+                         write('There is something on the ceiling. You could try to jump and get it.').
 describe(dollroom) :- write('Going into the room you can see that the torches are purple now. It looks like a ritual room and on the floor is a pentagram.'), nl,
                       write('Meters away you see a doll.'), nl,
                       write('Going East leads to a closer look at the pentagram.'), nl,
                       write('Going West leads back to the exit of the mansion.').
 describe(stairsroom) :- write('Looking around you can see two stairs.'), nl,
-                        write('In front of you is an altar. It looks like it is missing something'), nl,
+                        write('In front of you is an altar. It looks like it is missing something.'), nl,
                         write('The stairs to the East go up.'), nl,
                         write('The stairs to the West go down.'), nl,
-                        write('Going South leads back to the exit of the mansion').
+                        write('Going South leads back to the exit of the mansion.').
 describe(upstairsroom) :- write('You are on the first floor. You noticed that this area has a lot of dust and cobwebs.'), nl,
                           write('Going West leads to the room with the stairs.'), nl,
-                          write('Going North leads to another room.').
+                          write('Going North leads to a dark room.').
 describe(downstairsroom) :- write('You find yourself in the basement of the Mansion.'), nl,
-                            write('It is cold and dark. This place makes you feel scared.'), nl,
-                            write('There is a scary looking door to the north with a keyhole shaped like a skull.'), nl,
+                            write('It is cold and dark. You get goosebumps.'), nl,
+                            write('There is a scary looking door to the North with a keyhole shaped like a skull.'), nl,
                             write('Going East leads back to the stairs room.').    
 describe(roomwithchest) :- write('You are now within a small and dark room, containing a chest.'), nl,
-                           write('As you look closer you can see four buttons on the wall'), nl,
+                           write('As you look closer you can see four buttons on the wall.'), nl,
                            write('Next to the buttons there is a note reading:'), nl,
                            write('"Among the four there is one impostor. It shall guide you to your destination."'), nl,
-                           write('To the West there is another door.'), nl,
+                           write('Going West leads to a room that does not fit the spooky atmosphere at all.'), nl,
                            write('Going South leads back to the stairs.').
 describe(closetroom) :- write('There is a closet in the middle of the Room. Maybe there is something interesting inside.'), nl,
                         write('To the north there is a suspicious looking room. Maybe something hides in there.'), nl,
@@ -395,21 +398,21 @@ describe(pentagramarea) :- write('You are now standing in front of the Pentagram
 describe(keyroom) :- write('You are in a small room with a hook on the wall.'), nl,
                      write('Going South leads back to the downstairs room.').
 describe(floor1reducer) :- write('You are in a very well lit and soothing room.'), nl,
-                           write('The atmosphere is very different to the rest of the mansion'), nl,
-                           write('There is a comfy looking bed which looks like it could be rested upon'), nl,
+                           write('The atmosphere is very different to the rest of the mansion.'), nl,
+                           write('There is a comfy looking bed which looks like it could be rested upon.'), nl,
                            write('Going East leads back to the chest room.').
                 
 
 /* items */
 
 describe(ball) :- write('Obtained a regular ball.').
-describe(entrancekey) :- write('Obtained a normal looking key .Maybe it has something to do with the mansion.').
+describe(entrancekey) :- write('Obtained a normal looking key. Maybe it has something to do with the mansion.').
 describe(doll) :- write('Obtained a scary looking doll. It reminds you of a voodoo doll.').
-describe(torch) :- write('Obtained a torch. It emmits a warm light').
-describe(chestkey) :- write('Obtained Key that looks like it could fit in a chest').
+describe(torch) :- write('Obtained a torch. It emmits a warm light.').
+describe(chestkey) :- write('Obtained a key that looks like it could fit in a chest.').
 describe(skull) :- write('Obtained a skull. It looks like it can be used in some kind of ritual.').
 describe(demkey) :- write('Obtained demonic looking key.').
-describe(exitkey) :- write('Obtained yet another key. It looks somewhat similar to the first one').
+describe(exitkey) :- write('Obtained yet another key. It looks somewhat similar to the first one.').
 
 /* interactable objects */
 
@@ -420,24 +423,26 @@ describe(secondpainting) :- write('As you look at the sign, you read that the pa
 describe(thirdpainting) :- write('As you look at the sign, you read that the painting was drawn by "Pablo Picasso".'), nl,
                            write('You have seen that painting before on a tv show. It''s called "Guernica".'), nl.
 describe(fourthpainting) :- write('As you look at the sign, you read that the painting was drawn by "Conan Van Zix".'), nl,
-                            write('You have never heard of him and the painting also looks strange.'), nl.
+                            write('It''s a painting of a man that turns into a demon.'), nl,
+                            write('You have never heard of him and the painting also looks terrifying.'), nl.
 describe(firstbutton) :- write("You press the button but it does not seem to do anything."), nl,
                          write("Suddenly you notice that the Door is closed and you also smell a strong scent."), nl,
-                         write("The smell is overwhelming and you start to lose consciousness"), nl, die.
+                         write("The smell is overwhelming and you start to lose consciousness."), nl, die.
 describe(secondbutton) :- write("You press the button but it does not seem to do anything."), nl,
                           write("Suddenly you notice that the Door is closed and you also smell a strong scent."), nl,
-                          write("The smell is overwhelming and you start to lose consciousness"), nl, die.
+                          write("The smell is overwhelming and you start to lose consciousness."), nl, die.
 describe(thirdbutton) :- write("You press the button but it does not seem to do anything."), nl,
                          write("Suddenly you notice that the Door is closed and you also smell a strong scent."), nl,
-                         write("The smell is overwhelming and you start to lose consciousness"), nl, die.
+                         write("The smell is overwhelming and you start to lose consciousness."), nl, die.
 describe(fourthbutton) :- write('You press the fourth button and immediatly hear a sound from the other side of the room.'), nl,
-                          write('It turns out that the chest is now open and inside it there is a skull'), nl,
-                          write('you decide to pick it up.'), takeskull.
+                          write('It turns out that the chest is now open and inside it there is a skull.'), nl,
+                          write('You decide to pick it up.'), takeskull.
 describe(altar) :- write('You place the skull onto the altar.') , nl,
                    write('The candles suddenly get lit lighting up the room.'), nl,
-                   write('A demonic looking key suddenly appeared and you decide to take it'), takedemkey.
+                   write('A demonic looking key suddenly appeared and you decide to take it.'), takedemkey.
 describe(closet) :- write('You open the closet, which turns out to be empty.'), nl,
-                    write('But suddenly you hear a loud scream coming deep from within the mansion...'), incrfear, incrfear, incrfear, incrfear, incrfear. 
+                    write('But suddenly you hear a loud scream coming deep from within the mansion...'), nl,
+                    write('You slowly close the closet...'), incrfear, incrfear, incrfear, incrfear, incrfear. 
 describe(bed) :- write('You lay down and close your eyes.'), nl,
                  write('strangely the atmosphere of the room makes it possible to relax quite a bit.'), nl,
                  write('You feel a lot less stressed out.'), sleep.
