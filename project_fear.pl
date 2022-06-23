@@ -16,7 +16,7 @@ path(life_street, e, intersection_outside).
 path(key_street, w, intersection_outside). 
 path(mansion_entrance, s, intersection_outside). 
 
-path(mansion_exit, s, mansion_entrance) :- checkinventory(exitkey). 
+path(mansion_exit, s, mansion_entrance) :- checkinventory(key). 
 path(mansion_exit, w, darkhallway) :- checkinventory(torch).
 path(mansion_exit, e, dollroom). 
 path(mansion_exit, n, stairsroom). 
@@ -72,7 +72,7 @@ at(entrancekey, key_street).
 at(ball, intersection_outside).
 at(torch, mansion_exit).
 at(doll, pentagramarea).
-at(exitkey, keyroom).
+at(key, keyroom).
 at(keyroom, exitkey).
 
 look_at(firstpainting, darkhallway).
@@ -412,7 +412,7 @@ describe(torch) :- write('Obtained a torch. It emmits a warm light.').
 describe(chestkey) :- write('Obtained a key that looks like it could fit in a chest.').
 describe(skull) :- write('Obtained a skull. It looks like it can be used in some kind of ritual.').
 describe(demkey) :- write('Obtained demonic looking key.').
-describe(exitkey) :- write('Obtained yet another key. It looks somewhat similar to the first one.').
+describe(key) :- write('Obtained yet another key. It looks somewhat similar to the first one.').
 
 /* interactable objects */
 
@@ -436,10 +436,10 @@ describe(thirdbutton) :- write("You press the button but it does not seem to do 
                          write("The smell is overwhelming and you start to lose consciousness."), nl, die.
 describe(fourthbutton) :- write('You press the fourth button and immediatly hear a sound from the other side of the room.'), nl,
                           write('It turns out that the chest is now open and inside it there is a skull.'), nl,
-                          write('You decide to pick it up.'), takeskull.
+                          write('You decide to pick it up.'), nl, takeskull.
 describe(altar) :- write('You place the skull onto the altar.') , nl,
                    write('The candles suddenly get lit lighting up the room.'), nl,
-                   write('A demonic looking key suddenly appeared and you decide to take it.'), takedemkey.
+                   write('A demonic looking key suddenly appeared and you decide to take it.'), nl, takedemkey.
 describe(closet) :- write('You open the closet, which turns out to be empty.'), nl,
                     write('But suddenly you hear a loud scream coming deep from within the mansion...'), nl,
                     write('You slowly close the closet...'), incrfear, incrfear, incrfear, incrfear, incrfear. 
